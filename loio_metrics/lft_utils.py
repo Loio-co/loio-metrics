@@ -1,4 +1,4 @@
-from typing import List, AnyStr, Optional
+from typing import List, AnyStr, Optional, Union, Tuple
 import xml.etree.ElementTree as ET
 
 from .span import Span
@@ -46,3 +46,31 @@ def construct_ltf(text: str, spans: List[Span], encoding: Optional[str] = None) 
         current_element.tail = text[prev_span_end:]
 
     return ET.tostring(root, encoding=encoding)
+
+
+def parse_ltf(src: Union[str, bytes]) -> Tuple[str, List[Span]]:
+    """
+    Function extracts text and spans from the XML in Loio Tagging Format
+
+    @param src: XML source.
+    @return: Tuple of plain text and list of extracted spans.
+    """
+    def safe_empty(s: Optional[str]) -> str:
+        return s if s else ''
+
+    root = ET.fromstring(src)
+    if root.tag != 'body':
+        raise ValueError(f"Document's root element is <{root.tag}> but <body> is expected.")
+    res = []
+    text_buf = [safe_empty(root.text)]
+    cur_pos = len(text_buf[0])
+    for e in root:
+        if e.tag != 'e':
+            raise ValueError(f"'Document contains non-root element <{e.tag}> but <e> is expected only.")
+        e_txt = safe_empty(e.text)
+        res.append(Span(cur_pos, cur_pos + len(e_txt)))
+        txt = e_txt + safe_empty(e.tail)
+        cur_pos += len(txt)
+        text_buf += txt
+    text = ''.join(text_buf)
+    return text, res
