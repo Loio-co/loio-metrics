@@ -9,7 +9,7 @@ setuptools.setup(
     name="loio_metrics",
     version=version(),
     author="Serge Sotnyk, Phase One: Karma",
-    author_email="s.sotnyk@p1k.org",
+    author_email="s.sotnyk@loio.co",
     description="Metrics calculator for the Loio project.",
     long_description=long_description,
     long_description_content_type="text/markdown",
