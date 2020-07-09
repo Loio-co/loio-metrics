@@ -1,2 +1,2 @@
 # loio-metrics
-Specific metrics for the Loio project
+Specific metrics for the NLP part of the Loio project (https://loio.co)
