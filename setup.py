@@ -22,5 +22,10 @@ setuptools.setup(
     ],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
-    python_requires='>=3.7',
+    python_requires='>=3.6',
+    extras_require={
+        ':python_version == "3.6"': [
+            'dataclasses>=0.7',
+        ],
+    },
 )
