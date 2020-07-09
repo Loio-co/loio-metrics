@@ -41,3 +41,15 @@ def test_calc_counters_with_partial_diagnostics_pos():
 
     with pytest.raises(ValueError):
         calc_counters_with_partial([], [Span(0, 4), Span(9, 8)])
+
+
+def test_calc_counters_with_partial_diagnostics_s_factor():
+    with pytest.raises(ValueError):
+        calc_counters_with_partial([], [], partial_stimulation=-0.1)
+
+    with pytest.raises(ValueError):
+        calc_counters_with_partial([], [], partial_stimulation=1.1)
+
+    assert calc_counters_with_partial([], [], partial_stimulation=0) is not None
+    assert calc_counters_with_partial([], [], partial_stimulation=1) is not None
+    assert calc_counters_with_partial([], [], partial_stimulation=0.5) is not None

@@ -70,7 +70,7 @@ def _calc_span_len(map: np.ndarray, start_pos: int) -> int:
     return res
 
 
-def calc_longest_span(expected_unmatched_map: np.ndarray, actual: Span) -> int:
+def _calc_longest_span(expected_unmatched_map: np.ndarray, actual: Span) -> int:
     # Try to find the longest span on the bounds of the actual span.
     actual_len = actual.finish - actual.start
     left_expected_len = _calc_span_len(expected_unmatched_map, actual.start)
@@ -132,7 +132,7 @@ def calc_counters_with_partial(actual_spans: List[Span], expected_spans: List[Sp
         if overlapped_chars > 0:
             ma_len = ma.finish - ma.start
             divisor = calc_expected_span_len(expected_unmatched_map, ma) if ma_len == overlapped_chars else \
-                calc_longest_span(expected_unmatched_map, ma)
+                _calc_longest_span(expected_unmatched_map, ma)
 
             tpp += overlapped_chars / divisor
             # clear map to prevent consequent found on one ground truth span many short actual spans.
