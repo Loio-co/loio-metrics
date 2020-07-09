@@ -78,6 +78,18 @@ def calc_longest_span(expected_unmatched_map: np.ndarray, actual: Span) -> int:
     return max(actual_len, left_expected_len, right_expected_len)
 
 
+def _sort_and_check_spans(spans: List[Span], arg_label: str) -> List[Span]:
+    res = sorted(spans, key=lambda x: x.start)
+    for s in res:
+        if s.start>s.finish:
+            raise ValueError(f"Span with finish before start is found in argument {arg_label}: {s}")
+    if len(res) > 1:
+        for s1, s2 in zip(res, res[1:]):
+            if s1.finish > s2.start:
+                raise ValueError(f"Overlapped spans are found in argument {arg_label}: {s1} and {s2}")
+    return res
+
+
 def calc_counters_with_partial(actual_spans: List[Span], expected_spans: List[Span],
                                partial_stimulation: float = 0.75) -> Counters:
     """
@@ -93,6 +105,8 @@ def calc_counters_with_partial(actual_spans: List[Span], expected_spans: List[Sp
         raise ValueError(f"partial_stimulation must be between 0.0 and 1.0, got {partial_stimulation} instead.")
     if len(actual_spans) == 0 and len(expected_spans) == 0:
         return Counters(0, 0, 0)
+    actual_spans = _sort_and_check_spans(actual_spans, "actual_spans")
+    expected_spans = _sort_and_check_spans(expected_spans, "expected_spans")
     text_length = calc_text_length(actual_spans, expected_spans)
     total_actual = len(actual_spans)
     total_expected = len(expected_spans)
