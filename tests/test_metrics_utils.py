@@ -75,3 +75,17 @@ def test_calc_counters_2():
     actual = '<body>To <e>be or not to be</e>.</body>'
     counters = metrics_for_ltf(expected, actual, 1)
     assert counters.tp == 0.2
+
+
+def test_calc_counters_productivity():
+    expected = [Span(i * 10, i * 10 + 6) for i in range(100000)]
+    actual = [Span(s.start + 3, s.finish + 3) for s in expected]
+    counters = calc_counters_with_partial(expected, actual, 1)
+    assert counters.tp == len(expected)*0.5
+
+
+def test_calc_counters_productivity2():
+    expected = [Span(i * 10, i * 10 + 6) for i in range(100000)]
+    actual = [Span(i * 12, i * 12 + 6) for i in range(100000)]
+    counters = calc_counters_with_partial(expected, actual, 1)
+    assert counters.tp > 0
