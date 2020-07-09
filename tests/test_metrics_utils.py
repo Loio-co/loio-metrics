@@ -1,6 +1,6 @@
 import pytest
 
-from loio_metrics import calc_counters_with_partial, Span
+from loio_metrics import calc_counters_with_partial, Span, parse_ltf
 from loio_metrics.metrics_utils import Counters
 
 
@@ -53,3 +53,25 @@ def test_calc_counters_with_partial_diagnostics_s_factor():
     assert calc_counters_with_partial([], [], partial_stimulation=0) is not None
     assert calc_counters_with_partial([], [], partial_stimulation=1) is not None
     assert calc_counters_with_partial([], [], partial_stimulation=0.5) is not None
+
+
+def metrics_for_ltf(expected, actual, partial_stimulation=0.75):
+    expected_txt, expected_spans = parse_ltf(expected)
+    actual_txt, actual_spans = parse_ltf(actual)
+    # We should work with the same text
+    assert expected_txt == actual_txt
+    return calc_counters_with_partial(actual_spans, expected_spans, partial_stimulation)
+
+
+def test_calc_counters_1():
+    expected = '<body>To <e>be or not to be</e>.</body>'
+    actual = '<body>To be or <e>not</e> <e>to</e> <e>be</e>.</body>'
+    counters = metrics_for_ltf(expected, actual, 1)
+    assert counters.tp == 0.2
+
+
+def test_calc_counters_2():
+    expected = '<body>To be or <e>not</e> <e>to</e> <e>be</e>.</body>'
+    actual = '<body>To <e>be or not to be</e>.</body>'
+    counters = metrics_for_ltf(expected, actual, 1)
+    assert counters.tp == 0.2
