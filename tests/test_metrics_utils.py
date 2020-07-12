@@ -89,3 +89,31 @@ def test_calc_counters_productivity2():
     actual = [Span(i * 12, i * 12 + 6) for i in range(100000)]
     counters = calc_counters_with_partial(expected, actual, 1)
     assert counters.tp > 0
+
+
+def test_article_example():
+    expected = (
+        "<body>This DIAGNOSTIC PLATFORM BENCHMARKING STUDY AND EVALUATION AGREEMENT"
+        " (the “Agreement”) is made and entered into as of the last date of"
+        " signature below (the “Effective Date”), by and between <e>ProYard"
+        " Services, a Delaware corporation having its principal place of"
+        " business at 2140 Science Center Drive Burley, San Diego, CA, USA, ID"
+        " 83318 (“PartyA”)</e> and <e>ZOEMENS AG, a German corporation having its"
+        " principal place of business at Nuernbergerstrasse 89, 23626 Ratekau"
+        " (“PartyB”)</e>.</body>"
+    )
+
+    actual = (
+        "<body><e>This DIAGNOSTIC PLATFORM BENCHMARKING STUDY AND EVALUATION AGREEMENT"
+        " (the “Agreement”)</e> is made and entered into as of the last date of"
+        " signature below (the “Effective Date”), by and between <e>ProYard"
+        " Services, a Delaware corporation having its principal place of"
+        " business at 2140 Science Center Drive Burley, San Diego, CA, USA</e>, ID"
+        " <e>83318 (“PartyA”)</e> and <e>ZOEMENS AG, a German corporation having its"
+        " principal place of business at Nuernbergerstrasse 89, 23626 Ratekau"
+        " (“PartyB”)</e>.</body>"
+    )
+
+    counters = metrics_for_ltf(expected, actual)
+    assert counters.tp + counters.fp == 4
+    assert counters.tp + counters.fn == 2
